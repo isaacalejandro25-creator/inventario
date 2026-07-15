@@ -178,7 +178,8 @@
         //const auth = getAuth(app);
 
         // Referencia a la colección donde se guardarán los equipos
-        const equiposRef = collection(db, 'artifacts', currentAppId, 'public', 'data', 'inventario');
+        const equiposRef = collection(db, 'inventario_escuela');
+        //const equiposRef = collection(db, '', currentAppId, 'public', 'data', 'inventario');
 
         // Variables de estado global
         let equiposData = [];
