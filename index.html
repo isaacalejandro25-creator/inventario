@@ -12,29 +12,17 @@
         .fade-out { animation: fadeOut 0.3s ease-in-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(10px); } }
-        /* Personalizando el scrollbar para las tablas horizontales */
         .custom-scrollbar::-webkit-scrollbar { height: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
-        /* Animación de carga */
-        .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid #fff; width: 20px; height: 20px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
 
     <!-- Sistema de Notificaciones (Toast) -->
-    <div id="toast" class="fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-xl z-50 text-white hidden flex items-center space-x-2 font-medium">
-        <span id="toast-message">Mensaje de notificación</span>
-    </div>
-
-    <!-- Pantalla de Carga Inicial -->
-    <div id="loading-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex flex-col items-center justify-center text-white transition-opacity duration-300">
-        <div class="spinner mb-4 w-10 h-10 border-4"></div>
-        <p class="font-medium text-lg">Conectando con la base de datos...</p>
-        <p class="text-sm text-slate-300 mt-2">Sincronizando inventario en tiempo real</p>
+    <div id="toast" class="fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-xl z-50 text-white hidden flex items-center space-x-2 font-medium transition-all">
+        <span id="toast-message">Mensaje</span>
     </div>
 
     <!-- Barra de Navegación -->
@@ -47,24 +35,26 @@
                 <h1 class="text-xl font-bold tracking-tight">Reporte de Equipos</h1>
             </div>
             <div class="flex items-center space-x-4">
-                <span id="cloud-status" class="hidden sm:flex items-center text-xs font-medium bg-indigo-800 px-3 py-1.5 rounded-full">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>
-                    En línea
+                <!-- Indicador Dinámico de Estado -->
+                <span id="cloud-status" class="hidden sm:flex items-center text-xs font-medium bg-slate-800 px-3 py-1.5 rounded-full shadow-inner border border-slate-600">
+                    <span id="cloud-dot" class="w-2 h-2 rounded-full bg-amber-400 mr-2 animate-pulse"></span>
+                    <span id="cloud-text">Verificando conexión...</span>
                 </span>
+                
                 <button onclick="window.copyUrl()" class="flex items-center space-x-2 bg-indigo-500 hover:bg-indigo-400 text-white px-4 py-2 rounded-lg transition shadow">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                    <span class="hidden sm:inline font-medium">Compartir URL</span>
+                    <span class="hidden sm:inline font-medium">Copiar Enlace</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Contenido Principal de la Aplicación -->
-    <main id="app-content" class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 fade-in opacity-0 transition-opacity duration-500">
+    <!-- Contenido Principal -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         <!-- Tarjetas de Estadísticas -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center space-x-5 transition hover:shadow-md">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center space-x-5">
                 <div class="bg-blue-50 p-4 rounded-xl text-blue-600">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 </div>
@@ -74,7 +64,7 @@
                 </div>
             </div>
             
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center space-x-5 transition hover:shadow-md">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center space-x-5">
                 <div class="bg-emerald-50 p-4 rounded-xl text-emerald-600">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
@@ -84,7 +74,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center space-x-5 transition hover:shadow-md">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center space-x-5">
                 <div class="bg-rose-50 p-4 rounded-xl text-rose-600">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
@@ -97,14 +87,11 @@
 
         <!-- Lista de Inventario -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            
-            <!-- Cabecera de la tabla y Filtros -->
             <div class="p-5 border-b border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
                 <h2 class="text-lg font-bold text-slate-800 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
                     Detalle de Equipos
                 </h2>
-                
                 <div class="flex space-x-2 bg-slate-200/50 p-1 rounded-lg">
                     <button id="filter-todos" onclick="window.setFilter('todos')" class="px-4 py-1.5 text-sm font-medium rounded-md bg-white text-indigo-700 shadow-sm transition">Todos</button>
                     <button id="filter-disponibles" onclick="window.setFilter('disponibles')" class="px-4 py-1.5 text-sm font-medium rounded-md text-slate-600 hover:text-slate-900 transition">Disponibles</button>
@@ -112,50 +99,36 @@
                 </div>
             </div>
 
-            <!-- Vista de Tabla para Escritorio (Oculta en móviles) -->
+            <!-- Tabla Escritorio -->
             <div class="hidden md:block overflow-x-auto custom-scrollbar">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
                         <tr>
                             <th class="p-4 font-semibold">Etiqueta ID</th>
                             <th class="p-4 font-semibold">Tipo de Equipo</th>
-                            <th class="p-4 font-semibold">Ubicación Origen</th>
-                            <th class="p-4 font-semibold">Estado y Almacenamiento</th>
-                            <th class="p-4 font-semibold">Notas del Reporte</th>
+                            <th class="p-4 font-semibold">Ubicación</th>
+                            <th class="p-4 font-semibold">Estado y Almacenaje</th>
+                            <th class="p-4 font-semibold">Notas</th>
                             <th class="p-4 font-semibold text-center">Estatus</th>
                             <th class="p-4 font-semibold text-right">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="desktop-table-body" class="divide-y divide-slate-100 bg-white">
-                        <!-- Las filas se inyectan aquí con JavaScript -->
-                    </tbody>
+                    <tbody id="desktop-table-body" class="divide-y divide-slate-100 bg-white"></tbody>
                 </table>
             </div>
 
-            <!-- Vista de Tarjetas para Móviles (Oculta en escritorio) -->
-            <div id="mobile-cards-container" class="md:hidden p-4 space-y-4 bg-slate-50">
-                <!-- Las tarjetas se inyectan aquí con JavaScript -->
-            </div>
+            <!-- Tarjetas Móviles -->
+            <div id="mobile-cards-container" class="md:hidden p-4 space-y-4 bg-slate-50"></div>
         </div>
     </main>
 
-    <footer class="bg-white border-t border-slate-200 mt-auto py-8">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-center md:text-left">
-            <p class="text-slate-500 text-sm font-medium mb-2 md:mb-0">Sistema de Inventario Escolar</p>
-            <p class="text-xs text-slate-400">Sincronización en tiempo real habilitada</p>
-        </div>
-    </footer>
-
     <script type="module">
-        // Importaciones de Firebase v11
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, doc, setDoc, updateDoc, collection, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        // Agregamos las importaciones de Autenticación
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // =========================================================================
-        // ⚠️ PEGA AQUÍ LOS DATOS DE TU PROYECTO FIREBASE
-        // =========================================================================
+        // =====================================================================
+        // ⚠️ PEGA AQUÍ TUS DATOS EXACTOS DE FIREBASE
+        // =====================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyC6Mf3K3rYIgfZRT9CFYFK5Oj09ya8METM",
             authDomain: "computadoras-vendidas.firebaseapp.com",
@@ -164,149 +137,143 @@
             messagingSenderId: "310530619079",
             appId: "1:310530619079:web:53fc73a3821ea854b3f0e2"
         };
-        // =========================================================================
+        // =====================================================================
 
-        //const app = initializeApp(firebaseConfig);
-        //const db = getFirestore(app);
-
-        // Inicializar Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        //const app = initializeApp(finalConfig);
-        //const db = getFirestore(app);
-        // Inicializar Autenticación
-        //const auth = getAuth(app);
-
-        // Referencia a la colección donde se guardarán los equipos
-        const equiposRef = collection(db, 'inventario_escuela');
-        //const equiposRef = collection(db, '', currentAppId, 'public', 'data', 'inventario');
-
-        // Variables de estado global
-        let equiposData = [];
-        let currentFilter = 'todos';
-
-        // Los datos exactos extraídos del reporte
+        // Los datos iniciales fijos
         const initialReportData = [];
-
-        // 1. SALONES (16 Computadoras)
-        for(let i=1; i<=11; i++) {
-            initialReportData.push({ id_etiqueta: `PC-SALON-${String(i).padStart(2, '0')}`, tipo: 'Computadora', origen: 'Salones', almacenamiento: 'Sin almacenamiento', estado_fisico: 'Regular (Poca RAM, CPU viejo, INSERVIBLE)', notas: 'El SSD fue extraído y reubicado en equipos de Laboratorio para su VENTA', vendido: false });
-        }
+        for(let i=1; i<=11; i++) initialReportData.push({ id_etiqueta: `PC-SALON-${String(i).padStart(2, '0')}`, tipo: 'Computadora', origen: 'Salones', almacenamiento: 'Sin almacenamiento', estado_fisico: 'Regular (Poca RAM, CPU viejo, INSERVIBLE)', notas: 'El SSD fue extraído y reubicado en equipos de Laboratorio para su VENTA', vendido: false });
         initialReportData.push({ id_etiqueta: `PC-SALON-12`, tipo: 'Computadora', origen: 'Salones', almacenamiento: 'Disco Duro (HDD)', estado_fisico: 'Operativa', notas: 'El equipo es obsoleto y muy lento. INSERVIBLE', vendido: false });
-        for(let i=13; i<=16; i++) {
-            initialReportData.push({ id_etiqueta: `PC-SALON-${String(i).padStart(2, '0')}`, tipo: 'Computadora', origen: 'Salones', almacenamiento: 'HDD descompuesto', estado_fisico: 'Inservible', notas: 'El equipo no funciona y no tiene reparación viable.', vendido: false });
+        for(let i=13; i<=16; i++) initialReportData.push({ id_etiqueta: `PC-SALON-${String(i).padStart(2, '0')}`, tipo: 'Computadora', origen: 'Salones', almacenamiento: 'HDD a punto de colapsar', estado_fisico: 'Inservible', notas: 'El equipo no funciona correctamente y no tiene reparación viable.', vendido: false });
+        for(let i=1; i<=13; i++) initialReportData.push({ id_etiqueta: `TV-SALON-${String(i).padStart(2, '0')}`, tipo: 'Televisión 40"', origen: 'Salones', almacenamiento: 'N/A', estado_fisico: 'Operativa', notas: 'En buenas condiciones.', vendido: false });
+        initialReportData.push({ id_etiqueta: `TV-SALON-14`, tipo: 'Televisión 40"', origen: 'Salones', almacenamiento: 'N/A', estado_fisico: 'Inservible', notas: 'Pantalla estrellada.', vendido: false });
+        for(let i=1; i<=10; i++) initialReportData.push({ id_etiqueta: `PC-LAB-${String(i).padStart(2, '0')}`, tipo: 'Computadora', origen: 'Laboratorio', almacenamiento: 'SSD', estado_fisico: 'Excelente', notas: 'Actualizada exitosamente con el SSD extraído de los salones.', vendido: false });
+        for(let i=11; i<=12; i++) initialReportData.push({ id_etiqueta: `PC-LAB-${String(i).padStart(2, '0')}`, tipo: 'Computadora', origen: 'Laboratorio', almacenamiento: 'HDD obsoleto', estado_fisico: 'Inservible', notas: 'No sirven, no vale la pena actualizar.', vendido: false });
+        for(let i=13; i<=14; i++) initialReportData.push({ id_etiqueta: `PC-LAB-${String(i).padStart(2, '0')}`, tipo: 'Computadora', origen: 'Laboratorio', almacenamiento: 'HDD', estado_fisico: 'El equipo es obsoleto y muy lento. INSERVIBLE', notas: 'Se queda con HDD.', vendido: false });
+        
+
+        let equiposData = [...initialReportData];
+        let currentFilter = 'todos';
+        let db = null;
+        let isCloudConnected = false;
+
+        function isItemInservible(item) {
+            const esInservible = item.estado_fisico.includes('Inservible') || item.estado_fisico.includes('estrellada');
+            const esObsoleto = item.almacenamiento.includes('HDD') || item.almacenamiento.includes('Sin almacenamiento');
+            return esInservible || esObsoleto;
         }
 
-        // 2. SALONES (14 Televisiones)
-        for(let i=1; i<=13; i++) {
-            initialReportData.push({ id_etiqueta: `TV-SALON-${String(i).padStart(2, '0')}`, tipo: 'Televisión 40"', origen: 'Salones', almacenamiento: 'N/A', estado_fisico: 'Operativa', notas: 'En buenas condiciones.', vendido: false });
-        }
-        initialReportData.push({ id_etiqueta: `TV-SALON-14`, tipo: 'Televisión 40"', origen: 'Salones', almacenamiento: 'N/A', estado_fisico: 'Inservible', notas: 'La pantalla está estrellada.', vendido: false });
 
-        // 3. LABORATORIO (14 Computadoras)
-        for(let i=1; i<=10; i++) {
-            initialReportData.push({ id_etiqueta: `PC-LAB-${String(i).padStart(2, '0')}`, tipo: 'Computadora', origen: 'Laboratorio', almacenamiento: 'SSD (Reubicado de salones)', estado_fisico: 'Excelente (CPU actual)', notas: 'Actualizada exitosamente con el SSD extraído de los salones.', vendido: false });
-        }
-        for(let i=11; i<=12; i++) {
-            initialReportData.push({ id_etiqueta: `PC-LAB-${String(i).padStart(2, '0')}`, tipo: 'Computadora', origen: 'Laboratorio', almacenamiento: 'Desconocido', estado_fisico: 'Inservible', notas: 'No sirven, no vale la pena actualizar.', vendido: false });
-        }
-        for(let i=13; i<=14; i++) {
-            initialReportData.push({ id_etiqueta: `PC-LAB-${String(i).padStart(2, '0')}`, tipo: 'Computadora', origen: 'Laboratorio', almacenamiento: 'Disco Duro (HDD)', estado_fisico: 'El equipo es obsoleto y muy lento. INSERVIBLE', notas: 'Se quedan con HDD, no se les comprará SSD.', vendido: false });
-        }
+        // 1. Mostrar los datos de Inmediato (Adiós pantalla de carga)
+        updateUIView();
 
-        // 4. COORDINACIÓN DE INGLÉS (1 Computadora)
-        initialReportData.push({ id_etiqueta: `PC-COORD-01`, tipo: 'Computadora', origen: 'Coordinación Inglés', almacenamiento: 'SSD (Reubicado de salones)', estado_fisico: 'Operativa', notas: 'Se le instaló el último de los 11 SSD retirados de los salones.', vendido: false });
+        // 2. Intentar conexión a Firebase en Silencio
+        try {
+            const app = initializeApp(firebaseConfig);
+            
+            // Usamos el llamado estándar. Si falla por permisos o nombre, lo atraparemos más abajo.
+            db = getFirestore(app);
+            const equiposRef = collection(db, 'inventario_escuela');
 
-
-        async function initApp() {
-            try {
-                // 0. Iniciar sesión de forma anónima antes de buscar datos
-                await signInAnonymously(auth);
-
-                // 1. Comprobar si la base de datos está vacía para sembrar los datos la primera vez
-                const snapshot = await getDocs(equiposRef);
+            // Escuchar cambios de Firebase
+            onSnapshot(equiposRef, (snapshot) => {
                 if (snapshot.empty) {
-                    console.log("Base de datos vacía. Subiendo inventario inicial...");
-                    for (const item of initialReportData) {
-                        await setDoc(doc(equiposRef, item.id_etiqueta), item);
-                    }
-                }
-
-                // 3. Escuchar cambios en tiempo real (Real-time listener)
-                onSnapshot(equiposRef, (snapshot) => {
+                    console.log("Subiendo datos base...");
+                    initialReportData.forEach(item => setDoc(doc(equiposRef, item.id_etiqueta), item));
+                } else {
                     const tempArr = [];
-                    snapshot.forEach((documento) => {
-                        tempArr.push(documento.data());
-                    });
-                    
-                    // Ordenar por ID de etiqueta para mantener el orden alfabético
+                    snapshot.forEach(d => tempArr.push(d.data()));
                     tempArr.sort((a, b) => a.id_etiqueta.localeCompare(b.id_etiqueta));
                     equiposData = tempArr;
                     
-                    // Quitar pantalla de carga y actualizar vista
-                    document.getElementById('loading-overlay').classList.add('opacity-0');
-                    setTimeout(() => {
-                        document.getElementById('loading-overlay').classList.add('hidden');
-                        document.getElementById('app-content').classList.remove('opacity-0');
-                    }, 300);
-                    
+                    // Actualizar el estado visual a Conectado
+                    isCloudConnected = true;
+                    updateCloudBadge('connected');
                     updateUIView();
-
-                }, (error) => {
-                    console.error("Error escuchando cambios de Firestore:", error);
-                    if (error.message.includes("permissions") || error.message.includes("permisos")) {
-                        document.getElementById('loading-overlay').innerHTML = `
-                            <div class="text-rose-400 mb-2"><svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></div>
-                            <p class="font-medium text-lg text-white">Acceso Denegado por Firebase</p>
-                            <p class="text-sm text-slate-300 mt-2 text-center max-w-sm">Tus "Reglas" de Firestore están bloqueando el acceso. Ve a la consola de Firebase > Firestore Database > Reglas, y asegúrate de tener <code class="bg-slate-800 px-1 py-0.5 rounded text-amber-300">allow read, write: if true;</code></p>
-                        `;
-                    } else {
-                        showToast("Error de conexión con la nube.", false);
-                    }
-                });
-
-            } catch (error) {
-                console.error("Error al iniciar Firebase:", error);
-                
-                let errorMessage = "No se pudo conectar a Firebase. Verifica tu conexión a internet o asegúrate de haber creado la base de datos Firestore.";
-                if (error.message && error.message.includes("permissions")) {
-                    errorMessage = "Tus Reglas de seguridad de Firebase están bloqueando la lectura. Ve a la consola y cambia las reglas a true.";
                 }
+            }, (error) => {
+                // Si la regla falla o la base de datos no se encuentra, entra modo local
+                console.warn("Fallo Firebase. Pasando a modo local.", error);
+                enableLocalFallback();
+            });
 
-                document.getElementById('loading-overlay').innerHTML = `
-                    <div class="text-rose-400 mb-2"><svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                    <p class="font-medium text-lg text-white">Error de conexión</p>
-                    <p class="text-sm text-slate-300 mt-2 text-center max-w-sm">${errorMessage}</p>
-                `;
+        } catch (error) {
+            // Si la configuración está vacía o tiene error de sintaxis
+            console.warn("Error en configuración. Pasando a modo local.", error);
+            enableLocalFallback();
+        }
+
+        function enableLocalFallback() {
+            isCloudConnected = false;
+            updateCloudBadge('local');
+            
+            // Intentar recuperar datos del LocalStorage si existen
+            const localData = localStorage.getItem('inventarioLocal');
+            if (localData) {
+                equiposData = JSON.parse(localData);
+                updateUIView();
             }
         }
+
+        function updateCloudBadge(status) {
+            const badge = document.getElementById('cloud-status');
+            const dot = document.getElementById('cloud-dot');
+            const text = document.getElementById('cloud-text');
+            
+            if (status === 'connected') {
+                badge.className = "hidden sm:flex items-center text-xs font-medium bg-emerald-100 text-emerald-800 border-emerald-200 px-3 py-1.5 rounded-full shadow-sm";
+                dot.className = "w-2 h-2 rounded-full bg-emerald-500 mr-2";
+                text.innerText = "Nube Conectada";
+            } else if (status === 'local') {
+                badge.className = "hidden sm:flex items-center text-xs font-medium bg-slate-100 text-slate-600 border-slate-200 px-3 py-1.5 rounded-full shadow-sm";
+                dot.className = "w-2 h-2 rounded-full bg-slate-400 mr-2";
+                text.innerText = "Modo Offline / Local";
+            }
+        }
+
+        window.toggleVendido = async function(id_etiqueta, nuevoEstado) {
+            // 1. Actualizar interfaz inmediatamente para evitar demoras
+            const itemIndex = equiposData.findIndex(e => e.id_etiqueta === id_etiqueta);
+            if (itemIndex > -1) {
+                equiposData[itemIndex].vendido = nuevoEstado;
+                updateUIView();
+            }
+
+            // 2. Intentar guardar en la nube
+            if (isCloudConnected && db) {
+                try {
+                    const docRef = doc(db, 'inventario_escuela', id_etiqueta);
+                    await updateDoc(docRef, { vendido: nuevoEstado });
+                    showToast(nuevoEstado ? "Venta guardada en la nube" : "Venta revertida en la nube", true);
+                } catch (error) {
+                    console.error("Error al actualizar en la nube:", error);
+                    showToast("Error de nube. Guardando en local...", false);
+                    localStorage.setItem('inventarioLocal', JSON.stringify(equiposData));
+                }
+            } else {
+                // 3. Si está en modo local, guardar en el navegador
+                localStorage.setItem('inventarioLocal', JSON.stringify(equiposData));
+                showToast("Guardado localmente. La directora no verá este cambio.", false);
+            }
+        };
 
         function updateUIView() {
             const total = equiposData.length;
             const vendidos = equiposData.filter(e => e.vendido).length;
-            const disponibles = total - vendidos;
             
-            // Actualizar tarjetas resumen
             document.getElementById('stats-total').innerText = total;
-            document.getElementById('stats-disponibles').innerText = disponibles;
+            document.getElementById('stats-disponibles').innerText = total - vendidos;
             document.getElementById('stats-vendidos').innerText = vendidos;
             
-            // Aplicar filtro
-            let filteredData = equiposData;
-            if (currentFilter === 'disponibles') {
-                filteredData = equiposData.filter(e => !e.vendido);
-            } else if (currentFilter === 'vendidos') {
-                filteredData = equiposData.filter(e => e.vendido);
-            }
+            let filtered = equiposData;
+            if (currentFilter === 'disponibles') filtered = equiposData.filter(e => !e.vendido);
+            if (currentFilter === 'vendidos') filtered = equiposData.filter(e => e.vendido);
             
-            renderDesktopTable(filteredData);
-            renderMobileCards(filteredData);
+            renderDesktopTable(filtered);
+            renderMobileCards(filtered);
         }
 
         function getIcon(tipo) {
-            if (tipo.includes('Televisión')) {
-                return `<div class="bg-indigo-100 p-2 rounded-lg text-indigo-600 mr-3"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></div>`;
-            }
+            if (tipo.includes('Televisión')) return `<div class="bg-indigo-100 p-2 rounded-lg text-indigo-600 mr-3"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></div>`;
             return `<div class="bg-slate-200 p-2 rounded-lg text-slate-700 mr-3"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg></div>`;
         }
 
@@ -315,41 +282,20 @@
             tbody.innerHTML = '';
             
             if(data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-500">No se encontraron equipos con este filtro.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-500">Sin resultados.</td></tr>`;
                 return;
             }
             
             data.forEach(item => {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-indigo-50/30 transition-colors group";
+                tr.className = "hover:bg-indigo-50/30 transition-colors";
                 
                 const isBroken = item.estado_fisico.includes('Inservible') || item.estado_fisico.includes('estrellada');
-                const physicalBadge = isBroken 
-                    ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">${item.estado_fisico}</span>`
-                    : `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800">${item.estado_fisico}</span>`;
-                
-                const statusBadge = item.vendido 
-                    ? `<span class="px-3 py-1 text-xs font-semibold bg-rose-100 text-rose-700 rounded-full flex items-center justify-center w-24 mx-auto"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span> Vendido</span>`
-                    : `<span class="px-3 py-1 text-xs font-semibold bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center w-24 mx-auto"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span> Disponible</span>`;
+                const badge = isBroken ? `<span class="px-2 py-0.5 rounded text-xs bg-red-100 text-red-800">${item.estado_fisico}</span>` : `<span class="px-2 py-0.5 rounded text-xs bg-emerald-100 text-emerald-800">${item.estado_fisico}</span>`;
+                const status = item.vendido ? `<span class="px-3 py-1 text-xs bg-rose-100 text-rose-700 rounded-full font-semibold">Vendido</span>` : `<span class="px-3 py-1 text-xs bg-emerald-100 text-emerald-700 rounded-full font-semibold">Disponible</span>`;
+                const btn = item.vendido ? `<button onclick="window.toggleVendido('${item.id_etiqueta}', false)" class="text-xs px-3 py-1 bg-white border border-slate-300 rounded hover:bg-slate-50">Deshacer</button>` : `<button onclick="window.toggleVendido('${item.id_etiqueta}', true)" class="text-xs px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700">Marcar Vendido</button>`;
                     
-                const actionBtn = item.vendido
-                    ? `<button onclick="window.toggleVendido('${item.id_etiqueta}', false)" class="text-xs px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-md transition font-medium">Deshacer Venta</button>`
-                    : `<button onclick="window.toggleVendido('${item.id_etiqueta}', true)" class="text-xs px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition shadow font-medium">Marcar Vendido</button>`;
-                    
-                tr.innerHTML = `
-                    <td class="p-4 font-bold text-slate-700 whitespace-nowrap">${item.id_etiqueta}</td>
-                    <td class="p-4 flex items-center font-medium text-slate-900 whitespace-nowrap min-w-[200px]">
-                        ${getIcon(item.tipo)} ${item.tipo}
-                    </td>
-                    <td class="p-4 text-slate-600 text-sm font-medium whitespace-nowrap">${item.origen}</td>
-                    <td class="p-4 text-sm">
-                        <div class="mb-1">${physicalBadge}</div>
-                        <div class="text-slate-500 text-xs">${item.almacenamiento}</div>
-                    </td>
-                    <td class="p-4 text-slate-600 text-xs max-w-xs leading-relaxed italic">${item.notas}</td>
-                    <td class="p-4 align-middle">${statusBadge}</td>
-                    <td class="p-4 text-right align-middle">${actionBtn}</td>
-                `;
+                tr.innerHTML = `<td class="p-4 font-bold text-slate-700">${item.id_etiqueta}</td><td class="p-4 flex items-center font-medium">${getIcon(item.tipo)} ${item.tipo}</td><td class="p-4 text-sm">${item.origen}</td><td class="p-4 text-sm">${badge}<div class="text-xs text-slate-500 mt-1">${item.almacenamiento}</div></td><td class="p-4 text-xs max-w-xs italic text-slate-600">${item.notas}</td><td class="p-4 text-center">${status}</td><td class="p-4 text-right">${btn}</td>`;
                 tbody.appendChild(tr);
             });
         }
@@ -357,95 +303,24 @@
         function renderMobileCards(data) {
             const container = document.getElementById('mobile-cards-container');
             container.innerHTML = '';
-            
-            if(data.length === 0) {
-                container.innerHTML = `<div class="p-8 text-center text-slate-500 bg-white rounded-lg border border-slate-200">No hay equipos aquí.</div>`;
-                return;
-            }
-
             data.forEach(item => {
                 const card = document.createElement('div');
-                card.className = `bg-white border ${item.vendido ? 'border-rose-200' : 'border-slate-200'} rounded-xl p-5 shadow-sm relative transition-all`;
-                
+                card.className = `bg-white border ${item.vendido ? 'border-rose-200' : 'border-slate-200'} rounded-xl p-5 shadow-sm relative`;
                 const isBroken = item.estado_fisico.includes('Inservible') || item.estado_fisico.includes('estrellada');
-                
-                const statusBadge = item.vendido 
-                    ? `<span class="absolute top-5 right-5 px-2.5 py-1 text-[10px] uppercase font-bold tracking-wider bg-rose-100 text-rose-700 rounded-full">Vendido</span>`
-                    : `<span class="absolute top-5 right-5 px-2.5 py-1 text-[10px] uppercase font-bold tracking-wider bg-emerald-100 text-emerald-700 rounded-full">Disponible</span>`;
+                const status = item.vendido ? `<span class="absolute top-5 right-5 px-2.5 py-1 text-[10px] uppercase font-bold bg-rose-100 text-rose-700 rounded-full">Vendido</span>` : `<span class="absolute top-5 right-5 px-2.5 py-1 text-[10px] uppercase font-bold bg-emerald-100 text-emerald-700 rounded-full">Disponible</span>`;
+                const btn = item.vendido ? `<button onclick="window.toggleVendido('${item.id_etiqueta}', false)" class="w-full mt-4 text-sm py-2 bg-white border border-slate-300 rounded-lg">Deshacer</button>` : `<button onclick="window.toggleVendido('${item.id_etiqueta}', true)" class="w-full mt-4 text-sm py-2 bg-indigo-600 text-white rounded-lg font-semibold">Marcar Vendido</button>`;
                     
-                const actionBtn = item.vendido
-                    ? `<button onclick="window.toggleVendido('${item.id_etiqueta}', false)" class="w-full mt-5 text-sm px-4 py-2.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg transition font-semibold">Deshacer Venta</button>`
-                    : `<button onclick="window.toggleVendido('${item.id_etiqueta}', true)" class="w-full mt-5 text-sm px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition shadow-sm font-semibold flex justify-center items-center"><svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Marcar como Vendido</button>`;
-                    
-                card.innerHTML = `
-                    ${statusBadge}
-                    <div class="text-[11px] text-indigo-500 font-black tracking-widest mb-2">${item.id_etiqueta}</div>
-                    
-                    <div class="flex items-center space-x-3 mb-4">
-                        ${getIcon(item.tipo)}
-                        <div>
-                            <h3 class="font-bold text-slate-900 leading-tight">${item.tipo}</h3>
-                            <p class="text-xs text-slate-500 font-medium">${item.origen}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-slate-50 rounded-lg p-3 space-y-2 border border-slate-100">
-                        <div class="flex justify-between items-start">
-                            <span class="text-xs font-semibold text-slate-500">Estado:</span>
-                            <span class="text-xs text-right font-medium ${isBroken ? 'text-red-600' : 'text-slate-800'}">${item.estado_fisico}</span>
-                        </div>
-                        <div class="flex justify-between items-start">
-                            <span class="text-xs font-semibold text-slate-500">Almacenaje:</span>
-                            <span class="text-xs text-right font-medium text-slate-800 max-w-[60%] text-right">${item.almacenamiento}</span>
-                        </div>
-                        <hr class="border-slate-200 border-dashed my-2">
-                        <div>
-                            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Notas del reporte:</span>
-                            <p class="text-xs text-slate-600 italic leading-relaxed">${item.notas}</p>
-                        </div>
-                    </div>
-                    
-                    ${actionBtn}
-                `;
+                card.innerHTML = `${status}<div class="text-[11px] text-indigo-500 font-black mb-2">${item.id_etiqueta}</div><div class="flex items-center mb-4">${getIcon(item.tipo)}<div><h3 class="font-bold text-slate-900">${item.tipo}</h3><p class="text-xs text-slate-500">${item.origen}</p></div></div><div class="bg-slate-50 p-3 rounded text-xs space-y-1"><p><b>Estado:</b> <span class="${isBroken ? 'text-red-600' : ''}">${item.estado_fisico}</span></p><p><b>Almacenaje:</b> ${item.almacenamiento}</p><p class="italic text-slate-500 mt-2">${item.notas}</p></div>${btn}`;
                 container.appendChild(card);
             });
         }
 
-        // Exponer funciones al objeto window para que los botones en el HTML puedan llamarlas (ya que es un module)
-        window.toggleVendido = async function(id_etiqueta, nuevoEstado) {
-            try {
-                // Actualizar documento en Firestore
-                const docRef = doc(db, 'artifacts', currentAppId, 'public', 'data', 'inventario', id_etiqueta);
-                
-                // Mostrar UI de carga temporalmente en el botón o algo visual
-                showToast("Actualizando en la nube...", true);
-                
-                await updateDoc(docRef, { vendido: nuevoEstado });
-                
-                // No necesitamos llamar a updateUIView() manualmente aquí, 
-                // porque el onSnapshot escuchará el cambio y lo hará por nosotros en milisegundos.
-                showToast(
-                    nuevoEstado ? "¡Equipo vendido guardado en la nube!" : "Equipo nuevamente disponible.", 
-                    true
-                );
-            } catch (error) {
-                console.error("Error al actualizar:", error);
-                showToast("Error al guardar. Verifica tu conexión.", false);
-            }
-        };
-
         window.setFilter = function(status) {
             currentFilter = status;
-            
             ['todos', 'disponibles', 'vendidos'].forEach(s => {
                 const btn = document.getElementById(`filter-${s}`);
-                if (s === status) {
-                    btn.className = "px-4 py-1.5 text-sm font-medium rounded-md bg-white text-indigo-700 shadow-sm transition";
-                } else {
-                    btn.className = "px-4 py-1.5 text-sm font-medium rounded-md text-slate-600 hover:text-slate-900 transition";
-                }
+                btn.className = s === status ? "px-4 py-1.5 text-sm font-medium rounded-md bg-white text-indigo-700 shadow-sm transition" : "px-4 py-1.5 text-sm font-medium rounded-md text-slate-600 hover:text-slate-900 transition";
             });
-            
             updateUIView();
         };
 
@@ -456,51 +331,18 @@
             input.select();
             document.execCommand('copy');
             document.body.removeChild(input);
-            showToast("URL copiada. Lista para compartir a la directora.", true);
+            showToast("Enlace copiado", true);
         };
 
         function showToast(message, isSuccess = true) {
             const toast = document.getElementById('toast');
-            document.getElementById('toast-message').innerText = message;
-            
-            toast.className = `fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-xl z-50 text-white flex items-center space-x-2 font-medium fade-in`;
-            if (isSuccess) {
-                toast.classList.add('bg-emerald-600');
-                toast.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span id="toast-message">${message}</span>`;
-            } else {
-                toast.classList.add('bg-rose-600');
-                toast.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span id="toast-message">${message}</span>`;
-            }
-            
+            toast.className = `fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-xl z-50 text-white flex items-center space-x-2 font-medium fade-in ${isSuccess ? 'bg-emerald-600' : 'bg-amber-600'}`;
+            toast.innerHTML = `<span id="toast-message">${message}</span>`;
             toast.classList.remove('hidden');
-            
             setTimeout(() => {
-                toast.classList.remove('fade-in');
                 toast.classList.add('fade-out');
-                setTimeout(() => {
-                    toast.classList.add('hidden');
-                    toast.classList.remove('fade-out');
-                }, 300);
-            }, 3500);
-        }
-
-        // Validación de HTTPS (Firebase requiere conexión segura)
-        if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
-            document.getElementById('loading-overlay').innerHTML = `
-                <div class="text-orange-400 mb-2"><svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
-                <p class="font-medium text-lg text-white">Conexión No Segura</p>
-                <p class="text-sm text-slate-300 mt-2 text-center max-w-sm">Firebase requiere que uses <b>https://</b>. Por favor, cambia la URL en tu navegador a <br><a href="https://${window.location.host}${window.location.pathname}" class="text-indigo-300 underline font-bold">https://${window.location.host}${window.location.pathname}</a></p>
-            `;
-        } else {
-            // Iniciar el flujo de la aplicación
-            initApp().catch(err => {
-                console.error("Error crítico al iniciar:", err);
-                document.getElementById('loading-overlay').innerHTML = `
-                    <div class="text-rose-400 mb-2"><svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                    <p class="font-medium text-lg text-white">Error de conexión</p>
-                    <p class="text-sm text-slate-300 mt-2 text-center max-w-sm">No se pudo conectar a la base de datos. Verifica tu conexión a internet o asegúrate de haber creado la base de datos Firestore en modo de prueba.</p>
-                `;
-            });
+                setTimeout(() => { toast.classList.add('hidden'); toast.classList.remove('fade-out'); }, 300);
+            }, 3000);
         }
     </script>
 </body>
