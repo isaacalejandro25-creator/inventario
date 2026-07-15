@@ -150,11 +150,12 @@
         // Importaciones de Firebase v11
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, doc, setDoc, updateDoc, collection, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Agregamos las importaciones de Autenticación
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         // =========================================================================
         // ⚠️ PEGA AQUÍ LOS DATOS DE TU PROYECTO FIREBASE
         // =========================================================================
-        // Reemplaza el objeto de abajo con el que copiaste de la consola de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyC6Mf3K3rYIgfZRT9CFYFK5Oj09ya8METM",
             authDomain: "computadoras-vendidas.firebaseapp.com",
@@ -165,13 +166,14 @@
         };
         // =========================================================================
 
-        // Configuración para que funcione tanto en tu hosting como si se prueba en un entorno simulado
         const finalConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : userFirebaseConfig;
         const currentAppId = typeof __app_id !== 'undefined' ? __app_id : 'escuela-inventario-prod';
 
         // Inicializar Firebase
         const app = initializeApp(finalConfig);
         const db = getFirestore(app);
+        // Inicializar Autenticación
+        const auth = getAuth(app);
 
         // Referencia a la colección donde se guardarán los equipos
         const equiposRef = collection(db, 'artifacts', currentAppId, 'public', 'data', 'inventario');
@@ -215,6 +217,9 @@
 
         async function initApp() {
             try {
+                // 0. Iniciar sesión de forma anónima antes de buscar datos
+                await signInAnonymously(auth);
+
                 // 1. Comprobar si la base de datos está vacía para sembrar los datos la primera vez
                 const snapshot = await getDocs(equiposRef);
                 if (snapshot.empty) {
@@ -246,15 +251,29 @@
 
                 }, (error) => {
                     console.error("Error escuchando cambios de Firestore:", error);
-                    showToast("Error de conexión con la nube.", false);
+                    if (error.message.includes("permissions") || error.message.includes("permisos")) {
+                        document.getElementById('loading-overlay').innerHTML = `
+                            <div class="text-rose-400 mb-2"><svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></div>
+                            <p class="font-medium text-lg text-white">Acceso Denegado por Firebase</p>
+                            <p class="text-sm text-slate-300 mt-2 text-center max-w-sm">Tus "Reglas" de Firestore están bloqueando el acceso. Ve a la consola de Firebase > Firestore Database > Reglas, y asegúrate de tener <code class="bg-slate-800 px-1 py-0.5 rounded text-amber-300">allow read, write: if true;</code></p>
+                        `;
+                    } else {
+                        showToast("Error de conexión con la nube.", false);
+                    }
                 });
 
             } catch (error) {
                 console.error("Error al iniciar Firebase:", error);
+                
+                let errorMessage = "No se pudo conectar a Firebase. Verifica tu conexión a internet o asegúrate de haber creado la base de datos Firestore.";
+                if (error.message && error.message.includes("permissions")) {
+                    errorMessage = "Tus Reglas de seguridad de Firebase están bloqueando la lectura. Ve a la consola y cambia las reglas a true.";
+                }
+
                 document.getElementById('loading-overlay').innerHTML = `
                     <div class="text-rose-400 mb-2"><svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
                     <p class="font-medium text-lg text-white">Error de conexión</p>
-                    <p class="text-sm text-slate-300 mt-2 text-center max-w-sm">No se pudo conectar a Firebase. Verifica que pegaste correctamente la configuración de tu proyecto.</p>
+                    <p class="text-sm text-slate-300 mt-2 text-center max-w-sm">${errorMessage}</p>
                 `;
             }
         }
