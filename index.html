@@ -166,8 +166,8 @@
         };
         // =========================================================================
 
-        const finalConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : userFirebaseConfig;
-        const currentAppId = typeof __app_id !== 'undefined' ? __app_id : 'escuela-inventario-prod';
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
         // Inicializar Firebase
         const app = initializeApp(finalConfig);
